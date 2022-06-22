@@ -129,7 +129,11 @@ module ActiveStorage
     attr_reader :config
 
     def folder_for(key)
+      if ftp_store_direct
+        ''
+      else
       [key[0..1], key[2..3]].join("/")
+      end
     end
 
     def ensure_integrity_of(key, checksum)
@@ -156,7 +160,7 @@ module ActiveStorage
     end
 
     def http_url_for(key)
-      ([ftp_url, folder_for(key), key].join('/'))
+      File.join ftp_url, folder_for(key), key
     end
 
     def inferred_content_type
@@ -193,6 +197,10 @@ module ActiveStorage
 
     def ftp_chmod
       config.fetch(:ftp_chmod, 0600)
+    end
+
+    def ftp_store_direct
+      config.fetch(:ftp_store_direct, false)
     end
 
     def connection

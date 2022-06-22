@@ -32,6 +32,8 @@ production:
   # optional
   ftp_passive: true
   ftp_chmod: 0600
+  # skip spliting path, store directly at supplied key
+  ftp_store_direct: false
 ```
 
 ## License
