@@ -5,9 +5,7 @@ require "digest/md5"
 require "active_support/core_ext/numeric/bytes"
 
 module ActiveStorage
-
   class Service::FtpService < Service
-
     def initialize(**config)
       @config = config
     end
@@ -49,8 +47,8 @@ module ActiveStorage
     def download_chunk(key, range)
       instrument :download_chunk, key: key, range: range do
         open(http_url_for(key)) do |file|
-            file.seek range.begin
-            file.read range.size
+          file.seek range.begin
+          file.read range.size
         end
       end
     end
@@ -88,7 +86,7 @@ module ActiveStorage
       end
     end
 
-    def url(key, **options)
+    def url(key, **)
       instrument :url, key: key do |payload|
         generated_url = http_url_for(key)
         payload[:url] = generated_url
@@ -99,14 +97,16 @@ module ActiveStorage
     def url_for_direct_upload(key, expires_in:, content_type:, content_length:, checksum:)
       instrument :url, key: key do |payload|
         verified_token_with_expiration = ActiveStorage.verifier.generate(
-            {
-                key: key,
-                content_type: content_type,
-                content_length: content_length,
-                checksum: checksum
-            },
-            {expires_in: expires_in,
-             purpose: :blob_token}
+          {
+            key: key,
+            content_type: content_type,
+            content_length: content_length,
+            checksum: checksum
+          },
+          {
+            expires_in: expires_in,
+            purpose: :blob_token
+          }
         )
 
         generated_url = url_helpers.update_rails_disk_service_url(verified_token_with_expiration, host: current_host)
@@ -206,6 +206,5 @@ module ActiveStorage
         ftp.quit
       end
     end
-
   end
 end
